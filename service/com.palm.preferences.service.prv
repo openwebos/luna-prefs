@@ -1,0 +1,5 @@
+[D-BUS Service]
+Name=com.palm.preferences
+#Exec=/usr/bin/luna-prefs-service -d -l
+Exec=/usr/bin/luna-prefs-service
+Type=dynamic

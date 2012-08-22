@@ -1,0 +1,14 @@
+{
+    "role": {
+        "exeName":"/usr/bin/luna-prefs-service",
+        "type": "regular",
+        "allowedNames": ["com.palm.preferences"]
+    },
+    "permissions": [
+        {
+            "service":"com.palm.preferences",
+            "inbound":["*"],
+            "outbound":["*"]
+        }
+    ]
+}

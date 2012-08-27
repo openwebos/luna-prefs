@@ -21,8 +21,8 @@ include $(TOP)/config.mk
 # set non-blank default for MACHINE for luna-desktop-binaries build
 MACHINE ?= x86
 
-LIBS=sqlite3 glib-2.0 mjson
-# PmIpcLib 
+LIBS=sqlite3 glib-2.0
+# PmIpcLib  mjson
 
 OBJDIR=objs
 

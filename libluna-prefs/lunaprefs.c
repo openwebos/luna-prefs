@@ -32,7 +32,9 @@
 #include <unistd.h>
 #include <sys/vfs.h>
 
+#ifdef USE_MJSON
 #include <json.h>
+#endif
 #include <cjson/json.h>
 
 /* todo:
@@ -357,6 +359,7 @@ getValue( void* context, int nColumns, char** colValues, char** colNames )
                       SQLITE_ABORT  */
 }
 
+#ifdef USE_MJSON
 static void
 cjson_to_mjson_put( json_t** jsont, struct json_object* json )
 {
@@ -364,7 +367,9 @@ cjson_to_mjson_put( json_t** jsont, struct json_object* json )
     *jsont = json_parse_document( asStr );
     json_object_put( json );
 }
+#endif
 
+#ifdef USE_MJSON
 static void
 mjson_to_cjson( struct json_object** json, const json_t* jsont )
 {
@@ -378,6 +383,7 @@ mjson_to_cjson( struct json_object** json, const json_t* jsont )
         g_assert(0);            /* what to do? */
     }
 }
+#endif
 
 LPErr
 LPAppCopyValue( LPAppHandle handle, const char* key, char** jstr )
@@ -453,6 +459,7 @@ LPAppCopyValueInt( LPAppHandle handle, const char* key, int* intValue )
     return err;
 }
 
+#ifdef USE_MJSON
 LPErr
 LPAppCopyValueJ( LPAppHandle handle, const char* key, json_t** jsont )
 {
@@ -464,6 +471,7 @@ LPAppCopyValueJ( LPAppHandle handle, const char* key, json_t** jsont )
     }
     return err;
 }
+#endif
 
 LPErr
 LPAppCopyValueCJ( LPAppHandle handle, const char* key, struct json_object** json )
@@ -525,6 +533,7 @@ LPAppCopyKeys( LPAppHandle handle, char** jstr )
     return err;
 } /* LPAppCopyKeys */
 
+#ifdef USE_MJSON
 LPErr
 LPAppCopyKeysJ( LPAppHandle handle, json_t** jsont )
 {
@@ -536,6 +545,7 @@ LPAppCopyKeysJ( LPAppHandle handle, json_t** jsont )
     }
     return err;
 }
+#endif
 
 LPErr
 LPAppCopyKeysCJ( LPAppHandle handle, struct json_object** json )
@@ -597,6 +607,7 @@ LPAppCopyAll( LPAppHandle handle, char** jstr )
     return err;
 }
 
+#ifdef USE_MJSON
 LPErr
 LPAppCopyAllJ( LPAppHandle handle, json_t** jsont )
 {
@@ -608,6 +619,7 @@ LPAppCopyAllJ( LPAppHandle handle, json_t** jsont )
     }
     return err;
 }
+#endif
 
 LPErr
 LPAppCopyAllCJ( LPAppHandle handle, struct json_object** json )
@@ -690,6 +702,7 @@ LPAppSetValueInt( LPAppHandle handle, const char* key, int intValue )
     return err;
 } /* LPAppSetValueInt */
 
+#ifdef USE_MJSON
 LPErr
 LPAppSetValueJ( LPAppHandle handle, const char* key, const json_t* jsont )
 {
@@ -703,6 +716,7 @@ LPAppSetValueJ( LPAppHandle handle, const char* key, const json_t* jsont )
     json_object_put( json );
     return err;
 }
+#endif
 
 LPErr
 LPAppSetValueCJ( LPAppHandle handle, const char* key, struct json_object* json )
@@ -1153,6 +1167,7 @@ addToArrayIfUnique( const gchar* name, bool onPublicBus, void* closure )
     return err;
 } /* addToArrayIfUnique */
 
+#ifdef USE_MJSON
 LPErr
 LPSystemCopyKeysJ( json_t** jsont )
 {
@@ -1164,6 +1179,7 @@ LPSystemCopyKeysJ( json_t** jsont )
     }
     return err;
 }
+#endif
 
 static LPErr
 LPSystemCopyKeysCJ_impl( struct json_object** json, bool onPublicBus )
@@ -1209,7 +1225,7 @@ LPErr
 LPSystemCopyKeysCJ( struct json_object** json )
 {
     return LPSystemCopyKeysCJ_impl( json, false );
-} /* LPSystemCopyKeysJ */
+} /* LPSystemCopyKeysCJ */
 
 static LPErr
 LPSystemCopyAll_impl( char** jstr, bool onPublicBus )
@@ -1275,6 +1291,7 @@ addValToArray( const gchar* name, bool onPublicBus, void* closure )
     return err;
 }
 
+#ifdef USE_MJSON
 LPErr
 LPSystemCopyAllJ( json_t** jsont )
 {
@@ -1286,6 +1303,7 @@ LPSystemCopyAllJ( json_t** jsont )
     }
     return err;
 }
+#endif
 
 static LPErr
 LPSystemCopyAllCJ_impl( struct json_object** json, bool onPublicBus )
@@ -1343,6 +1361,7 @@ LPSystemCopyValue( const char* key, char** jstr )
     return err;
 } /* LPSystemCopyValue */
 
+#ifdef USE_MJSON
 LPErr
 LPSystemCopyValueJ( const char* key, json_t** jsont )
 {
@@ -1354,6 +1373,7 @@ LPSystemCopyValueJ( const char* key, json_t** jsont )
     }
     return err;
 }
+#endif
 
 LPErr
 LPSystemCopyValueCJ( const char* key, struct json_object** json )

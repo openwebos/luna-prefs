@@ -23,7 +23,9 @@
 #define _LUNAPREFS_H_
 
 #include <stdbool.h>
+#ifdef USE_MJSON
 #include <json.h>
+#endif
 #include <cjson/json.h>
 
 #ifdef __cplusplus
@@ -90,7 +92,9 @@ LPErr LPAppCopyValue( LPAppHandle handle, const char* key, char** jstr );
      */
 LPErr LPAppCopyValueString( LPAppHandle handle, const char* key, char** str );
 LPErr LPAppCopyValueInt( LPAppHandle handle, const char* key, int* intValue );
+#ifdef USE_MJSON
 LPErr LPAppCopyValueJ( LPAppHandle handle, const char* key, json_t** json );
+#endif
 LPErr LPAppCopyValueCJ( LPAppHandle handle, const char* key, struct json_object** json );
 
 LPErr LPAppSetValue( LPAppHandle handle, const char* key, const char* const jstr );
@@ -101,7 +105,9 @@ LPErr LPAppSetValue( LPAppHandle handle, const char* key, const char* const jstr
      */
 LPErr LPAppSetValueString( LPAppHandle handle, const char* key, const char* const str );
 LPErr LPAppSetValueInt( LPAppHandle handle, const char* key, int intValue );
+#ifdef USE_MJSON
 LPErr LPAppSetValueJ( LPAppHandle handle, const char* key, const json_t* json );
+#endif
 LPErr LPAppSetValueCJ( LPAppHandle handle, const char* key, struct json_object* json );
 
 LPErr LPAppRemoveValue( LPAppHandle handle, const char* key );
@@ -114,7 +120,9 @@ LPErr LPAppRemoveValue( LPAppHandle handle, const char* key );
  * internally.  Caller must call g_free when done.
  */
 LPErr LPAppCopyKeys( LPAppHandle handle, char** jstr );
+#ifdef USE_MJSON
 LPErr LPAppCopyKeysJ( LPAppHandle handle, json_t** json );
+#endif
 LPErr LPAppCopyKeysCJ( LPAppHandle handle, struct json_object** json );
 
 /**
@@ -125,7 +133,9 @@ LPErr LPAppCopyKeysCJ( LPAppHandle handle, struct json_object** json );
  * string returned is g_malloc'd internally.  Caller must call g_free when done.
  */
 LPErr LPAppCopyAll( LPAppHandle handle, char** jstr );
+#ifdef USE_MJSON
 LPErr LPAppCopyAllJ( LPAppHandle handle, json_t** json );
+#endif
 LPErr LPAppCopyAllCJ( LPAppHandle handle, struct json_object** json );
 
 
@@ -155,7 +165,9 @@ LPErr LPSystemCopyStringValue( const char* key, char** jstr );
  * g_free when done.
  */
 LPErr LPSystemCopyValue( const char* key, char** jstr );
+#ifdef USE_MJSON
 LPErr LPSystemCopyValueJ( const char* key, json_t** json );
+#endif
 LPErr LPSystemCopyValueCJ( const char* key, struct json_object** json );
 
 /**
@@ -167,7 +179,9 @@ LPErr LPSystemCopyValueCJ( const char* key, struct json_object** json );
  */
 
 LPErr LPSystemCopyKeys( char** jstr );
+#ifdef USE_MJSON
 LPErr LPSystemCopyKeysJ( json_t** json );
+#endif
 LPErr LPSystemCopyKeysCJ( struct json_object** json );
 
 LPErr LPSystemCopyKeysPublic( char** jstr ); /* for use by the service only */
@@ -181,7 +195,9 @@ LPErr LPSystemCopyKeysPublicCJ( struct json_object** json ); /* for use by the s
  * string returned is g_malloc'd internally.  Caller must call g_free when done.
  */
 LPErr LPSystemCopyAll( char** jstr );
+#ifdef USE_MJSON
 LPErr LPSystemCopyAllJ( json_t** json );
+#endif
 LPErr LPSystemCopyAllCJ( struct json_object** json );
 
 LPErr LPSystemCopyAllPublic( char** jstr ); /* for use by the service only */

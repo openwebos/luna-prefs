@@ -6,6 +6,11 @@ Core
 ====
 This repository contains luna-prefs component which retrieves system preferences values set and used by webOS
 
+How to Build on Linux
+=====================
+
+This is built when you build the Desktop version of webOS:  
+       openwebos/build-desktop
 
 # Copyright and License Information
 

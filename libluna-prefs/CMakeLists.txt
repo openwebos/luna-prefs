@@ -28,8 +28,8 @@ include(webOS/webOS)
 # -- to still use these for unit testing to
 # -- check that this sub-component compiles.
 
-webos_modules_init(1 0 0 QUALIFIER RC2)
-webos_component(2 0 0)
+#webos_modules_init(1 0 0 QUALIFIER RC2)
+#webos_component(2 0 0)
 
 MESSAGE(STATUS "BUILD START libluna-prefs..")
 

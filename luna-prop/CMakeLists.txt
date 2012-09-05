@@ -28,8 +28,8 @@ include(webOS/webOS)
 # -- to still use these for unit testing to
 # -- check that this sub-component compiles.
 
-webos_modules_init(1 0 0 QUALIFIER RC2)
-webos_component(2 0 0)
+#webos_modules_init(1 0 0 QUALIFIER RC2)
+#webos_component(2 0 0)
 
 MESSAGE(STATUS "BUILD START lunaprop")
 
@@ -87,5 +87,5 @@ target_link_libraries(lunaprop
                       ${LUNA_PREFS_LDFLAGS}
                       )
 
-webos_build_program()
+webos_build_program(NAME lunaprop)
 MESSAGE(STATUS "BUILD END lunaprop")

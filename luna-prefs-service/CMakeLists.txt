@@ -31,8 +31,6 @@ include(webOS/webOS)
 #webos_modules_init(1 0 0 QUALIFIER RC2)
 #webos_component(2 0 0)
 
-MESSAGE (STATUS "BUILD START luna-prefs-service")
-
 include(FindPkgConfig)
 
 # -- add local include paths
@@ -59,14 +57,6 @@ pkg_check_modules(LS2 REQUIRED luna-service2)
 include_directories(LS2_INCLUDE_DIRS)
 webos_add_compiler_flags(ALL ${LS2_CFLAGS})
 
-# -- check for liblunaprefs
-pkg_check_modules(LUNA_PREFS REQUIRED luna-prefs)
-webos_add_compiler_flags(ALL ${LUNA_PREFS_CFLAGS})
-include_directories(${LUNA_PREFS_INCLUDE_DIRS})
-
-#webos_build_pkgconfig()
-#webos_config_build_doxygen(doc Doxyfile)
-
 # -- no way to disable warn_unused_result right now.
 webos_add_compiler_flags(ALL -g -O3 -Wall -Wno-unused-but-set-variable -Wno-unused-variable -fno-exceptions)
 webos_add_linker_options(ALL --no-undefined)
@@ -77,8 +67,7 @@ target_link_libraries(luna-prefs-service
                       ${CJSON_LDFLAGS}
                       ${MJSON_LDFLAGS}
                       ${LS2_LDFLAGS}
-                      ${LUNA_PREFS_LDFLAGS}
+                      luna-prefs
                       )
 
 webos_build_program(NAME luna-prefs-service)
-MESSAGE(STATUS "BUILD END luna-prefs-service")

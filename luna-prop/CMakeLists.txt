@@ -40,11 +40,6 @@ include_directories(../include/)
 pkg_check_modules(GLIB2 REQUIRED glib-2.0)
 webos_add_compiler_flags(ALL ${GLIB2_CFLAGS})
 
-# -- check for mjson
-pkg_check_modules(MJSON REQUIRED mjson)
-webos_add_compiler_flags(ALL ${MJSON_CFLAGS})
-include_directories(${MJSON_INCLUDE_DIRS})
-
 # -- check for cjson
 pkg_check_modules(CJSON REQUIRED cjson)
 webos_add_compiler_flags(ALL ${CJSON_CFLAGS})
@@ -73,7 +68,6 @@ add_executable(lunaprop main.c)
 target_link_libraries(lunaprop 
                       ${GLIB2_LDFLAGS} 
                       ${CJSON_LDFLAGS}
-                      ${MJSON_LDFLAGS}
                       luna-prefs
                       )
 

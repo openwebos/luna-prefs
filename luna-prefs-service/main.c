@@ -212,7 +212,7 @@ replyWithKeyValue( LSHandle* sh, LSMessage* message, LSError* lserror,
 
     add_true_result( result );
 
-    char* text = json_object_to_json_string( result );
+    const char* text = json_object_to_json_string( result );
     g_assert( !!text );
     bool success = replyWithValue( sh, message, lserror, text );
 
@@ -249,7 +249,7 @@ sysGet_internal( LSHandle* sh, LSMessage* message, SysGetter getter,
         json = wrapArray( json );
     }
 
-    char* jstr = json_object_to_json_string( json );
+    const char* jstr = json_object_to_json_string( json );
 
     LSError lserror;
     LSErrorInit( &lserror );
@@ -398,7 +398,7 @@ sysGetSome_impl( LSHandle* sh, LSMessage* message, void* user_data,
             arrayOut = wrapArray( arrayOut );
         }
 
-        char* text = json_object_to_json_string( arrayOut );
+        const char* text = json_object_to_json_string( arrayOut );
         g_assert( !!text );
 
         LSError lserror;

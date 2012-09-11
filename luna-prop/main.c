@@ -71,7 +71,7 @@ dumpArray( bool shellMode, bool all, const char* value )
         int ii;
         for ( ii = 0; ii < len; ++ii ) {
             struct json_object* child = json_object_array_get_idx( array, ii );
-            char* str;
+            const char* str;
 
             if ( all && json_object_is_type( array, json_type_object ) ) { /* why test for all? */
                 str = json_object_to_json_string( child );

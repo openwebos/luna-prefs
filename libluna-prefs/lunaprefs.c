@@ -363,7 +363,7 @@ getValue( void* context, int nColumns, char** colValues, char** colNames )
 static void
 cjson_to_mjson_put( json_t** jsont, struct json_object* json )
 {
-    char* asStr = json_object_get_string( json );
+    const char* asStr = json_object_get_string( json );
     *jsont = json_parse_document( asStr );
     json_object_put( json );
 }
@@ -496,7 +496,7 @@ static LPErr
 copy_as_string( struct json_object* json, char** out )
 {
     LPErr err = LP_ERR_NONE;
-    char* txt = json_object_get_string( json );
+    const char* txt = json_object_get_string( json );
     g_assert( !!txt );
     *out = g_strdup( txt );
     return err;
@@ -732,7 +732,7 @@ LPAppSetValueCJ( LPAppHandle handle, const char* key, struct json_object* json )
                 && !json_object_is_type(json, json_type_array) ) {
         err = LP_ERR_VALUENOTJSON;
     } else {
-        char* jstr = json_object_get_string( json );
+        const char* jstr = json_object_get_string( json );
         if ( !!jstr ) {
             err = setValueString( handle, key, jstr );
         } else {
@@ -1076,7 +1076,7 @@ LPSystemCopyKeys_impl( char** jstr, bool onPublicBus )
 
     if ( LP_ERR_NONE == err )
     {
-        char* str = json_object_get_string( jarray );
+        const char* str = json_object_get_string( jarray );
         if ( !!str ) 
         {
             *jstr = g_strdup( str );
@@ -1236,7 +1236,7 @@ LPSystemCopyAll_impl( char** jstr, bool onPublicBus )
     LPErr err = LPSystemCopyAllCJ_impl( &array, onPublicBus );
     
     if ( LP_ERR_NONE == err ) {
-        char* str = json_object_get_string( array );
+        const char* str = json_object_get_string( array );
         g_assert( NULL != str );
         *jstr = g_strdup(str);
 

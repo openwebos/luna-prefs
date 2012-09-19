@@ -30,3 +30,4 @@ add_subdirectory(libluna-prefs)
 add_subdirectory(luna-prop)
 add_subdirectory(luna-prefs-service)
 
+install(FILES include/lunaprefs.h DESTINATION ${WEBOS_INSTALL_INCLUDEDIR})

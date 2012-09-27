@@ -21,7 +21,7 @@ cmake_minimum_required(VERSION 2.8.7)
 project(luna-prefs C)
 
 include(webOS/webOS)
-webos_modules_init(1 0 0 QUALIFIER RC2)
+webos_modules_init(1 0 0 QUALIFIER RC3)
 webos_component(2 0 0)
 
 include(FindPkgConfig)
@@ -30,4 +30,5 @@ add_subdirectory(libluna-prefs)
 add_subdirectory(luna-prop)
 add_subdirectory(luna-prefs-service)
 
+webos_build_system_bus_files()
 install(FILES include/lunaprefs.h DESTINATION ${WEBOS_INSTALL_INCLUDEDIR})

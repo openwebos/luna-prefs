@@ -787,7 +787,7 @@ Example response for a succesful call:
 \code
 [
     {
-        "com.palm.properties.version": "HP webOS 3.0.5 SDK"
+        "com.palm.properties.version": "Open webOS 3.5.0 SDK"
     },
     {
         "com.palm.properties.productLineName": "Emulator"
@@ -871,7 +871,7 @@ Example response for a succesful call:
 {
     "values": [
         {
-            "com.palm.properties.version": "HP webOS 3.0.5 SDK"
+            "com.palm.properties.version": "Open webOS 3.5.0 SDK"
         },
         {
             "com.palm.properties.productLineName": "Emulator"
@@ -938,7 +938,7 @@ luna-send -n 1 -f luna://com.palm.preferences/systemProperties/getSysProperty '{
 Example response for a succesful call:
 \code
 {
-    "com.palm.properties.version": "HP webOS Nova-Main",
+    "com.palm.properties.version": "Open webOS 3.5.0",
     "returnValue": true
 }
 \endcode

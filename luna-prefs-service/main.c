@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <syslog.h>
 
-#include <lunaservice.h>
+#include <luna-service2/lunaservice.h>
 #include <lunaprefs.h>
 #include <cjson/json.h>
 

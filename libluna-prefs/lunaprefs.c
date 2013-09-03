@@ -36,7 +36,7 @@
 #include <json.h>
 #endif
 #include <cjson/json.h>
-
+#include <nyx/nyx_client.h>
 /* todo:
  *
  * set auto-vaccuum property
@@ -802,7 +802,79 @@ get_from_cmdline( char** jstr, const char* key )
 
     return err;
 }
+static LPErr read_machine_type(char** jstr,const char* key)
+{
+    nyx_error_t error = NYX_ERROR_GENERIC;
+    nyx_device_handle_t device = NULL;
+    const char *dev_name;
 
+    LPErr err = LP_ERR_SYSCONFIG;
+    error = nyx_init();
+    if (NYX_ERROR_NONE == error)
+    {
+        error = nyx_device_open(NYX_DEVICE_DEVICE_INFO, "Main", &device);
+
+        if ((NYX_ERROR_NONE == error) & (NULL != device))
+        {
+            if ( 0 == strncmp( key, "nduid", strlen(key) ))
+            {
+                error = nyx_device_info_query(device, NYX_DEVICE_INFO_NDUID, &dev_name);
+            }
+            else if(0 == strncmp(key,"boardType",strlen(key)))
+            {
+                error = nyx_device_info_query(device, NYX_DEVICE_INFO_BOARD_TYPE, &dev_name);
+            }
+            if (NYX_ERROR_NONE == error)
+            {
+                *jstr = g_strdup(dev_name);
+                err = LP_ERR_NONE;
+            }
+            nyx_device_close(device);
+        }
+        nyx_deinit();
+    }
+    return err;
+}
+
+static LPErr read_OS_Info(char **jstr,const char* key)
+{
+    nyx_error_t error = NYX_ERROR_GENERIC;
+    nyx_device_handle_t device = NULL;
+    const char *dev_name;
+    LPErr err = LP_ERR_SYSCONFIG;
+    error = nyx_init();
+    if (NYX_ERROR_NONE == error)
+    {
+        error = nyx_device_open(NYX_DEVICE_OS_INFO, "Main", &device);
+        if ((NYX_ERROR_NONE == error) & (NULL != device))
+        {
+            if ( 0 == strncmp( key, "version",strlen(key) ))
+            {
+                error = nyx_os_info_query(device, NYX_OS_INFO_CORE_OS_KERNEL_VERSION, &dev_name);
+            }
+            else if(0 == strncmp(key,"buildNumber",strlen(key)))
+            {
+                error = nyx_os_info_query(device, NYX_OS_INFO_WEBOS_BUILD_ID, &dev_name);
+            }
+            else if(0 == strncmp(key,"buildName",strlen(key)))
+            {
+                error = nyx_os_info_query(device, NYX_OS_INFO_WEBOS_IMAGENAME, &dev_name);
+            }
+            else
+            {
+                error = nyx_device_info_query(device, NYX_OS_INFO_WEBOS_BUILD_ID, &dev_name);
+            }
+            if (NYX_ERROR_NONE == error)
+            {
+                *jstr = g_strdup(dev_name);
+                err = LP_ERR_NONE;
+            }
+            nyx_device_close(device);
+         }
+         nyx_deinit();
+   }
+   return err;
+}
 static LPErr
 get_from_buildInfo( const char* fileKey, char** jstr )
 {
@@ -929,13 +1001,24 @@ figureShutdownClean( char** jstr )
 {
     LPAppHandle handle;
     LPErr err = LPAppGetHandle( "com.palm.system", &handle );
+
+
+
     if ( LP_ERR_NONE == err ) 
     {
         char* str = NULL;
         err = LPAppCopyValueString( handle, "last_umount_clean", &str );
+
         if ( LP_ERR_NONE == err ) 
         {
             *jstr = g_strdup( str );
+        }
+        else if ( err == LP_ERR_NO_SUCH_KEY )
+        {
+            char* tempstr = " ";
+            *jstr = g_strdup(tempstr);
+            err=LP_ERR_NONE ;
+
         }
         g_free( str );
         (void)LPAppFreeHandle( handle, false );
@@ -1023,7 +1106,7 @@ LPSystemCopyStringValue( const char* key, char** jstr )
             gint exit_status;
             GError* error = NULL;
             gboolean success
-                = g_spawn_command_line_sync( "cat /proc/nduid", &standard_output,
+                = g_spawn_command_line_sync( "cat /var/lib/nyx/nduid", &standard_output,
                                              &standard_error, &exit_status, 
                                              &error );
             if ( success && 0 == exit_status ) {
@@ -1037,16 +1120,16 @@ LPSystemCopyStringValue( const char* key, char** jstr )
                 err = LP_ERR_NONE;
             }
 #else
-            err = get_from_cmdline( jstr, "nduid" );
+            err = read_machine_type(jstr,"nduid");
 #endif
         } else if ( 0 == strcmp( token, PROP_NAME_BOARDTYPE ) ) {
-            err = get_from_cmdline( jstr, "boardtype" );
+            err=read_machine_type(jstr,"boardType");
         } else if ( ! strcmp( token, INFO_NAME_VERSION ) ) {
-            err = get_from_buildInfo( INFO_KEY_VERSION, jstr );
+            err=read_OS_Info(jstr,"version");
         } else if ( ! strcmp( token, INFO_NAME_BUILDNAME ) ) {
-            err = get_from_buildInfo( INFO_KEY_BUILDNAME, jstr );
+            err=read_OS_Info(jstr,"buildName");
         } else if ( ! strcmp( token, INFO_NAME_BUILDNUMBER ) ) {
-            err = get_from_buildInfo( INFO_KEY_BUILDNUMBER, jstr );
+            err=read_OS_Info(jstr,"buildNumber");
         } else if ( ! strcmp( token, PROP_NAME_DISKSIZE ) ) {
             err = figureDiskCapacity( jstr );
         } else if ( ! strcmp( token, PROP_NAME_FREESPACE ) ) {

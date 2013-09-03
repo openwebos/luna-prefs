@@ -67,6 +67,11 @@ pkg_check_modules(SQLITE3 REQUIRED sqlite3)
 webos_add_compiler_flags(ALL ${SQLITE3_CFLAGS})
 include_directories(${SQLITE3_DIRS})
 
+
+#-- check for NYX
+pkg_check_modules(NYXLIB REQUIRED nyx)
+webos_add_compiler_flags(ALL ${NYXLIB_CFLAGS_OTHER})
+include_directories(${NYXLIB_INCLUDE_DIRS})
 webos_build_pkgconfig()
 #webos_config_build_doxygen(doc Doxyfile)
 
@@ -79,6 +84,7 @@ target_link_libraries(luna-prefs
                       ${GLIB2_LDFLAGS} 
                       ${CJSON_LDFLAGS}
                       ${SQLITE3_LDFLAGS}
+                      ${NYXLIB_LDFLAGS}
                       )
 
 webos_build_library(NOHEADERS)

@@ -1552,6 +1552,8 @@ appSetValue( LSHandle* sh, LSMessage* message, void* user_data )
 
         if ( !getStringParam( appId, &appIdString ) ) {
             errorReplyStrMissingParam( sh, message, "appId" );
+        } else if ( g_strcmp0(g_strstrip(appIdString),"") == 0) {
+            errorReplyStrMissingParam( sh, message, "appId" );
         } else if ( !getStringParam( key, &keyString ) ) {
             errorReplyStrMissingParam( sh, message, "key" );
         } else if ( !value ) {

@@ -18,8 +18,6 @@
 
 TOP ?= ..
 include $(TOP)/config.mk
-# set non-blank default for MACHINE for luna-desktop-binaries build
-MACHINE ?= x86
 
 LIBS=sqlite3 glib-2.0
 # PmIpcLib  mjson
@@ -34,7 +32,7 @@ OUT_LIB=lib$(PN).so.0
 # What we claim to be internally: should match current pmpiclib's soname
 SONAME=libluna-prefs.so
 
-cflags := $(CFLAGS) -fPIC -I../include -I../include/private/ -DMACHINE="$(MACHINE)"
+cflags := $(CFLAGS) -fPIC -I../include -I../include/private/
 
 ldflags := -L$(BUILD)/lib -L$(STAGING_LIBDIR) $(LDFLAGS)
 

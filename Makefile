@@ -24,7 +24,6 @@ LIBFILES := $(BUILD)/lib/libluna-prefs.so.0
 BINFILES := $(BUILD)/bin/luna-service $(BUILD)/bin/luna-prop
 TESTS := $(BUILD)/bin/test/*
 #EXECS := $(BUILD)/bin/memchute 
-MACHINE ?= x86
 
 # default: tests-noltp
 

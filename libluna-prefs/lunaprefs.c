@@ -1100,28 +1100,7 @@ LPSystemCopyStringValue( const char* key, char** jstr )
             */
             err = readFromFile( path, jstr );
         } else if ( 0 == strcmp( token, PROP_NAME_NDUID ) ) {
-#if MACHINE==qemux86
-            gchar* standard_output;
-            gchar* standard_error;
-            gint exit_status;
-            GError* error = NULL;
-            gboolean success
-                = g_spawn_command_line_sync( "cat /var/lib/nyx/nduid", &standard_output,
-                                             &standard_error, &exit_status, 
-                                             &error );
-            if ( success && 0 == exit_status ) {
-                int len = strlen(standard_output);
-                if ( standard_output[len-1] == '\n' ) {
-                    standard_output[len-1] = '\0';
-                }
-                *jstr = g_strdup( standard_output );
-                g_free( standard_output );
-                g_free( standard_error );
-                err = LP_ERR_NONE;
-            }
-#else
             err = read_machine_type(jstr,"nduid");
-#endif
         } else if ( 0 == strcmp( token, PROP_NAME_BOARDTYPE ) ) {
             err=read_machine_type(jstr,"boardType");
         } else if ( ! strcmp( token, INFO_NAME_VERSION ) ) {

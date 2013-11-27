@@ -1547,8 +1547,8 @@ appSetValue( LSHandle* sh, LSMessage* message, void* user_data )
         struct json_object* appId = json_object_object_get( payload, "appId" );
         struct json_object* key = json_object_object_get( payload, "key");
         struct json_object* value = json_object_object_get( payload, "value");
-        char* appIdString;
-        char* keyString;
+        gchar* appIdString = NULL;
+        gchar* keyString = NULL;
 
         if ( !getStringParam( appId, &appIdString ) ) {
             errorReplyStrMissingParam( sh, message, "appId" );
@@ -1576,6 +1576,8 @@ appSetValue( LSHandle* sh, LSMessage* message, void* user_data )
             errorReplyErr( sh, message, err );
         }
 
+        g_free( keyString );
+        g_free( appIdString );
         json_object_put( payload );
     }
     if ( success ) {

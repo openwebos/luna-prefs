@@ -939,7 +939,8 @@ figureDiskCapacity( char** jstr )
         long long unsigned nBlocks;
         char name[64];             /* change format specifiers if sizes changed!! */
 
-        int nRead = fscanf( file, "%d%d%llu%63s", &major, &minor, &nBlocks, name );
+        // added 32-bit numeric widths to deal with static analizer
+        int nRead = fscanf( file, "%10d%10d%20llu%63s", &major, &minor, &nBlocks, name );
         if ( 4 == nRead ) {
             nBlocks *= 1024;
             *jstr = g_strdup_printf( "%llu", nBlocks );

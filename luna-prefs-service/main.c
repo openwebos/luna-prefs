@@ -79,7 +79,7 @@ term_handler( int signal )
     g_main_loop_quit( g_mainloop );
 }
 
-static gboolean            
+static gboolean
 sourceFunc( gpointer data )
 {
     g_debug( "%s()", __func__ );
@@ -178,7 +178,7 @@ parseMessage( LSMessage* message, const char* firstKey, ... )
                 char** out = va_arg(ap, char**);
                 g_assert( out != NULL );
                 *out = NULL;
-                
+
                 struct json_object* match = json_object_object_get( doc, key );
                 if (NULL == match) {
                     goto error;
@@ -199,7 +199,7 @@ parseMessage( LSMessage* message, const char* firstKey, ... )
 static void
 add_true_result( struct json_object* obj )
 {
-    json_object_object_add( obj, "returnValue", 
+    json_object_object_add( obj, "returnValue",
                             json_object_new_boolean( true ) );
 }
 
@@ -220,11 +220,11 @@ replyWithKeyValue( LSHandle* sh, LSMessage* message, LSError* lserror,
     struct json_object* jsonVal = json_tokener_parse( value );
 
     /* If it doesn't parse, it's probably just a string.  Turn it into a json string */
-    if ( is_error(jsonVal) ) 
+    if ( is_error(jsonVal) )
     {
         jsonVal = json_object_new_string( value );
     }
-    else 
+    else
     {
         enum json_type typ = json_object_get_type( jsonVal );
         if ( (typ != json_type_object) && (typ != json_type_array) )
@@ -264,7 +264,7 @@ wrapArray( struct json_object* jarray )
 typedef LPErr (*SysGetter)( struct json_object** json );
 
 static bool
-sysGet_internal( LSHandle* sh, LSMessage* message, SysGetter getter, 
+sysGet_internal( LSHandle* sh, LSMessage* message, SysGetter getter,
                  bool asObj )
 {
     LPErr err;
@@ -300,7 +300,7 @@ sysGetKeys_impl( LSHandle* sh, LSMessage* message, void* user_data, bool asObj )
     LSPalmService* psh = (LSPalmService*)user_data;
     bool isPublic = LSMessageIsPublic(psh, message );
     g_debug( "%s(%s)", __func__, LSMessageGetPayload(message) );
-    return sysGet_internal( sh, message, 
+    return sysGet_internal( sh, message,
                             isPublic ? LPSystemCopyKeysPublicCJ
                             : LPSystemCopyKeysCJ, asObj );
 }
@@ -448,12 +448,12 @@ sysGetKeysObj( LSHandle* sh, LSMessage* message, void* user_data )
 
 
 static bool
-sysGetAll_impl( LSHandle* sh, LSMessage* message, void* user_data, 
+sysGetAll_impl( LSHandle* sh, LSMessage* message, void* user_data,
                 bool asObj )
 {
     LSPalmService* psh = (LSPalmService*)user_data;
     bool isPublic = LSMessageIsPublic( psh, message );
-    return sysGet_internal( sh, message, 
+    return sysGet_internal( sh, message,
                             isPublic? LPSystemCopyAllPublicCJ:LPSystemCopyAllCJ,
                             asObj );
 }
@@ -675,7 +675,7 @@ sysGetSome_impl( LSHandle* sh, LSMessage* message, void* user_data,
 
             arrayOut = json_object_new_array();
 
-            for ( ii = 0; ii < len; ++ii ) 
+            for ( ii = 0; ii < len; ++ii )
             {
                 struct json_object* key;
                 struct json_object* elem = json_object_array_get_idx( doc, ii );
@@ -962,7 +962,7 @@ sysGetValue( LSHandle* sh, LSMessage* message, void* user_data )
     bool isPublic = LSMessageIsPublic( psh, message );
 
     gchar* key = NULL;
-    if ( parseMessage( message, "key", json_type_string, &key, NULL ) 
+    if ( parseMessage( message, "key", json_type_string, &key, NULL )
          && ( NULL != key ) ) {
         if ( isPublic && !onWhitelist( key ) ) {
             err = LP_ERR_NO_SUCH_KEY;
@@ -989,7 +989,7 @@ sysGetValue( LSHandle* sh, LSMessage* message, void* user_data )
     g_free( key );
 
     errorReplyErr( sh, message, err );
-   
+
     return true;
 } /* sysGetValue */
 
@@ -1036,7 +1036,7 @@ appGet_internal( LSHandle* sh, LSMessage* message, AppGetter getter, bool asObj 
         LSError lserror;
         LSErrorInit( &lserror );
 
-        if ( !LSMessageReply( sh, message, 
+        if ( !LSMessageReply( sh, message,
                               json_object_to_json_string(json),
                               &lserror ) ) {
             LSErrorPrint( &lserror, stderr );
@@ -1463,18 +1463,18 @@ appGetValue( LSHandle* sh, LSMessage* message, void* user_data )
     } else {
         errorReplyStr( sh, message, "no appId or key parameter found" );
     }
-    
+
     return true;
 } /* appGetValue */
 
 static bool
 getStringParam( struct json_object* param, char** str )
 {
-    bool ok = !!param 
+    bool ok = !!param
         && json_object_is_type( param, json_type_string );
     if ( ok ) {
         *str = g_strdup( json_object_get_string( param ) );
-    } 
+    }
     return ok;
 }
 
@@ -1643,21 +1643,25 @@ appRemoveValue( LSHandle* sh, LSMessage* message, void* user_data )
     if ( parseMessage( message,
                        "appId", json_type_string, &appId,
                        "key", json_type_string, &key,
-                       NULL ) ) 
+                       NULL ) )
     {
         LPAppHandle handle;
         LPErr err = LPAppGetHandle( appId, &handle );
-        if ( LP_ERR_NONE == err ) 
+        if ( LP_ERR_NONE == err )
         {
             err = LPAppRemoveValue( handle, key );
             (void)LPAppFreeHandle( handle, true );
             errorReplyErr( sh, handle, err );
             retVal = LP_ERR_NONE == err;
         }
-    }
 
-    if ( retVal ) {
-        successReply( sh, message );
+        if ( retVal ) {
+            successReply( sh, message );
+        }
+    }
+    else
+    {
+        errorReplyStr( sh, message, "no appId or key parameter found" );
     }
 
     g_free( appId );
@@ -1684,7 +1688,7 @@ static LSMethod appPropMethods[] = {
 };
 
 static void
-logFilter(const gchar *log_domain, GLogLevelFlags log_level, 
+logFilter(const gchar *log_domain, GLogLevelFlags log_level,
           const gchar *message, gpointer unused_data )
 {
     if (log_level > sLogLevel) return;

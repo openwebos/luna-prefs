@@ -183,7 +183,9 @@ parseMessage( LSMessage* message, const char* firstKey, ... )
                 if (NULL == match) {
                     goto error;
                 }
-                g_assert( json_object_is_type( match, typ ) );
+                if ( json_object_is_type( match, typ ) == 0) {
+                    goto error;
+                }
                 *out = g_strdup( json_object_get_string( match ) );
             }
             success = key == NULL; /* reached the end of arglist correctly */

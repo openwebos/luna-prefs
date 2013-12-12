@@ -1638,7 +1638,6 @@ appRemoveValue( LSHandle* sh, LSMessage* message, void* user_data )
     g_debug( "%s(%s)", __func__, LSMessageGetPayload(message) );
     reset_timer();
 
-    bool retVal = false;
     gchar* appId = NULL;
     gchar* key = NULL;
 
@@ -1652,18 +1651,24 @@ appRemoveValue( LSHandle* sh, LSMessage* message, void* user_data )
         if ( LP_ERR_NONE == err )
         {
             err = LPAppRemoveValue( handle, key );
+            if (LP_ERR_NONE == err)
+            {
+                successReply( sh, message );
+            }
+            else
+            {
+                errorReplyErr( sh, message, err );
+            }
             (void)LPAppFreeHandle( handle, true );
-            errorReplyErr( sh, handle, err );
-            retVal = LP_ERR_NONE == err;
         }
-
-        if ( retVal ) {
-            successReply( sh, message );
+        else
+        {
+            errorReplyErr( sh, message, err);
         }
     }
     else
     {
-        errorReplyStr( sh, message, "no appId or key parameter found" );
+        errorReplyStr( sh, message, "'appId'(string)/'key'(string) parameter is missing");
     }
 
     g_free( appId );

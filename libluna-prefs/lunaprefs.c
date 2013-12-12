@@ -113,9 +113,9 @@ typedef struct LPAppHandle_t {
 
 static LPErr openDB( LPAppHandle_t* handle );
 static LPErr addTable( LPAppHandle_t* handle );
-static LPErr LPSystemCopyAllCJ_impl( struct json_object** json, 
+static LPErr LPSystemCopyAllCJ_impl( struct json_object** json,
                                      bool onPublicBus );
-static LPErr LPSystemCopyKeysCJ_impl( struct json_object** json, 
+static LPErr LPSystemCopyKeysCJ_impl( struct json_object** json,
                                       bool onPublicBus );
 static bool systemKeyIsPublic( const char* key );
 
@@ -233,7 +233,7 @@ runSQL( LPAppHandle_t* handle, bool canAddTable,
                             callback, context,
                             &errmsg );
 
-        if ( SQLITE_OK != err ) 
+        if ( SQLITE_OK != err )
         {
             if ( SQLITE_ERROR == err && canAddTable )
             {
@@ -252,7 +252,7 @@ runSQL( LPAppHandle_t* handle, bool canAddTable,
         }
 
         lperr = sqlerr_to_lperr( err );
-    
+
         sqlite3_free( stmt );
     }
     return lperr;
@@ -261,12 +261,12 @@ runSQL( LPAppHandle_t* handle, bool canAddTable,
 static LPErr
 addTable( LPAppHandle_t* handle )
 {
-    LPErr err = runSQL( handle, false, NULL, NULL, 
+    LPErr err = runSQL( handle, false, NULL, NULL,
                         "CREATE TABLE IF NOT EXISTS data( key TEXT PRIMARY KEY, value TEXT );" );
     return err;
 }
 
-/* 
+/*
  * Open the sqlite DB if it isn't already open.  Since there are ways to wind
  * up with a DB file that exists but doesn't have a table, we're prepared to
  * add a table in reponse to errors on read or write.  Thus we don't add one
@@ -310,23 +310,17 @@ LPAppClearData( const char* appId )
 LPErr
 LPAppGetHandle( const char* appId, LPAppHandle* handle )
 {
-    LPErr err = -EINVAL;
-    gchar* path = NULL;
     g_return_val_if_fail( handle != NULL, -EINVAL );
+    *handle = NULL;
+
     g_return_val_if_fail( appId != NULL, -EINVAL );
 
-    path = g_strdup_printf( "/var/preferences/%s", appId );
-    if ( NULL == path ) goto error; 
-
     LPAppHandle_t* hndl = g_new0( LPAppHandle_t, 1 );
-    if ( NULL == hndl ) goto error; 
-    hndl->pPath = path;
+    hndl->pPath = g_strdup_printf( "/var/preferences/%s", appId );
 
     *handle = (LPAppHandle)hndl;
 
-    err = 0;
- error:
-    return err;
+    return 0;
 } /* LPAppGetHandle */
 
 LPErr
@@ -349,7 +343,7 @@ LPAppFreeHandle( LPAppHandle handle, bool commit )
     return lperr;
 }
 
-static int 
+static int
 getValue( void* context, int nColumns, char** colValues, char** colNames )
 {
     g_assert( nColumns == 1 );    /* I asked for one column, not '*' */
@@ -396,7 +390,7 @@ LPAppCopyValue( LPAppHandle handle, const char* key, char** jstr )
 
     LPErr err = runSQL( handle, true, getValue, &value,
                         "SELECT VALUE FROM data WHERE key = \'%q\';", key );
-    
+
     if ( err == 0 ) {
         if ( !value ) {         /* will be null if getValue() never fired */
             err = LP_ERR_NO_SUCH_KEY;
@@ -422,12 +416,12 @@ LPAppCopyValueString( LPAppHandle handle, const char* key, char** str )
     {
         /* assume it's an array of length one.  Return the string at elem 0. */
         struct json_object* child = json_object_array_get_idx( json, 0 );
-        
+
         if ( (NULL != child) && ( json_object_is_type( child, json_type_string)) )
         {
             *str = g_strdup( json_object_get_string( child ) );
-        } 
-        else 
+        }
+        else
         {
             err = LP_ERR_VALUENOTJSON;
         }
@@ -445,11 +439,11 @@ LPAppCopyValueInt( LPAppHandle handle, const char* key, int* intValue )
     {
         /* assume it's an array of length one.  Return the string at elem 0. */
         struct json_object* child = json_object_array_get_idx( json, 0 );
-        if ( (NULL != child) && json_object_is_type( child, json_type_string) ) 
+        if ( (NULL != child) && json_object_is_type( child, json_type_string) )
         {
             *intValue = atoi( json_object_get_string( child ) );
-        } 
-        else 
+        }
+        else
         {
             err = LP_ERR_VALUENOTJSON;
         }
@@ -483,7 +477,7 @@ LPAppCopyValueCJ( LPAppHandle handle, const char* key, struct json_object** json
     char* jstr = NULL;
     LPErr err = LPAppCopyValue( handle, key, &jstr );
 
-    if ( LP_ERR_NONE == err ) 
+    if ( LP_ERR_NONE == err )
     {
         err = strToJsonWithCheck( jstr, json );
     }
@@ -510,7 +504,7 @@ addValueToArray( void* context, int nColumns, char** colValues, char** colNames 
 	struct json_object* jstr = json_object_new_string( colValues[0] );
 
 	json_object_array_add( jarray, jstr );
-    
+
     return 0;
 } /* addValueToArray */
 
@@ -558,10 +552,10 @@ LPAppCopyKeysCJ( LPAppHandle handle, struct json_object** json )
 
     err = runSQL( handle, true, addValueToArray, jarray, "SELECT key FROM data;" );
 
-    if ( LP_ERR_NONE == err ) 
+    if ( LP_ERR_NONE == err )
     {
         *json = jarray;
-    } 
+    }
     else
     {
         json_object_put( jarray );
@@ -584,7 +578,7 @@ addKeyValueToArray( void* context, int nColumns, char** colValues, char** colNam
             err = 0;
         }
     }
-    
+
     return err;
 } /* addValueToArray */
 
@@ -635,8 +629,8 @@ LPAppCopyAllCJ( LPAppHandle handle, struct json_object** json )
     return err;
 }
 
-static LPErr 
-setValueString( LPAppHandle handle, const char* key, const char* jstr ) 
+static LPErr
+setValueString( LPAppHandle handle, const char* key, const char* jstr )
 {
         /* Use REPLACE, not INSERT, to avoid duplicates.  */
     return runSQL( handle, true, NULL, NULL,
@@ -748,11 +742,15 @@ LPAppRemoveValue( LPAppHandle handle, const char* key )
 {
     g_return_val_if_fail( handle != NULL, -EINVAL );
     g_return_val_if_fail( key != NULL, -EINVAL );
-    
+    LPAppHandle_t* hndl = (LPAppHandle_t*)handle;
+
     LPErr err = -EINVAL;
 
     err = runSQL( handle, true, NULL, NULL, "DELETE FROM data WHERE key = \'%q\';", key );
-
+    if (0 == sqlite3_changes(hndl->pDb))
+    {
+        err = LP_ERR_NO_SUCH_KEY;
+    }
     return err;
 }
 
@@ -766,7 +764,7 @@ LPAppRemoveValue( LPAppHandle handle, const char* key )
    trenchcoat (or any other flashing app) puts in /dev/tokens.  If a key
    begins with "com.palm.properties." then we strip that prefix and assume a
    file in /dev/tokens.  Other prefixes are treated as special cases.
- */ 
+ */
 
 static LPErr
 get_from_cmdline( char** jstr, const char* key )
@@ -777,16 +775,16 @@ get_from_cmdline( char** jstr, const char* key )
     if ( NULL != cmdline ) {
         char buf[4096];
 
-        if ( buf == fgets( buf, sizeof(buf), cmdline ) ) 
+        if ( buf == fgets( buf, sizeof(buf), cmdline ) )
         {
             char* token;
             char* str = buf;
             char* saveptr;
             int keylen = strlen( key );
-            while ( NULL != (token = strtok_r( str, " ", &saveptr )) ) 
+            while ( NULL != (token = strtok_r( str, " ", &saveptr )) )
             {
                 if ( 0 == strncmp( key, token, keylen )
-                     && token[keylen] == '=' ) 
+                     && token[keylen] == '=' )
                 {
                     *jstr = g_strdup( token + keylen + 1 ); /* skip '=' */
                     err = LP_ERR_NONE;
@@ -796,7 +794,7 @@ get_from_cmdline( char** jstr, const char* key )
                 str = NULL;         /* for subsequent strtok_r calls */
             }
         }
-        
+
         fclose( cmdline );
     }
 
@@ -946,7 +944,7 @@ figureDiskCapacity( char** jstr )
             *jstr = g_strdup_printf( "%llu", nBlocks );
             err = LP_ERR_NONE;
         }
-        
+
         pclose( file );
     }
     return err;
@@ -1005,12 +1003,12 @@ figureShutdownClean( char** jstr )
 
 
 
-    if ( LP_ERR_NONE == err ) 
+    if ( LP_ERR_NONE == err )
     {
         char* str = NULL;
         err = LPAppCopyValueString( handle, "last_umount_clean", &str );
 
-        if ( LP_ERR_NONE == err ) 
+        if ( LP_ERR_NONE == err )
         {
             *jstr = g_strdup( str );
         }
@@ -1044,7 +1042,7 @@ static char*
 getTokenPath( const char* token, const char* dir )
 {
     char* path = g_strdup_printf( "%s/%s", dir, token );
-    if ( NULL != path ) 
+    if ( NULL != path )
     {
         if ( !g_file_test( path, G_FILE_TEST_EXISTS ) ) {
             g_free( path );
@@ -1060,7 +1058,7 @@ readFromFile( const char* path, char** jstrp )
     LPErr err = LP_ERR_NO_SUCH_KEY;
     char* jstr;
     GMappedFile* mf = g_mapped_file_new( path, FALSE, NULL );
-    if ( NULL != mf ) 
+    if ( NULL != mf )
     {
         gsize siz = g_mapped_file_get_length( mf );
         gchar buf[siz + 1];
@@ -1140,10 +1138,10 @@ LPSystemCopyKeys_impl( char** jstr, bool onPublicBus )
     if ( LP_ERR_NONE == err )
     {
         const char* str = json_object_get_string( jarray );
-        if ( !!str ) 
+        if ( !!str )
         {
             *jstr = g_strdup( str );
-        } 
+        }
         else
         {
             g_critical( "json_object_get_string failed" );
@@ -1159,7 +1157,7 @@ LPErr
 LPSystemCopyKeys( char** jstr )
 {
     return LPSystemCopyKeys_impl( jstr, false );
-    
+
 }
 
 LPErr
@@ -1219,7 +1217,7 @@ addToArrayIfUnique( const gchar* name, bool onPublicBus, void* closure )
             /* do nothing; dups are not an error */
         } else {
             struct json_object* jstr = json_object_new_string( val );
-            if ( 0 != json_object_array_add( jarray, jstr ) ) 
+            if ( 0 != json_object_array_add( jarray, jstr ) )
             {
                 /* Am I leaking jstr in this case?  We're probably hosed anyway. */
                 err = -EINVAL;
@@ -1265,9 +1263,9 @@ LPSystemCopyKeysCJ_impl( struct json_object** json, bool onPublicBus )
         }
     }
     int ii;
-    for ( ii = 0; 
+    for ( ii = 0;
           LP_ERR_NONE == err && ii < sizeof(g_non_tokens)/sizeof(g_non_tokens[0]);
-          ++ii ) 
+          ++ii )
     {
         err = addToArrayIfUnique( g_non_tokens[ii], onPublicBus, jarray );
     }
@@ -1275,7 +1273,7 @@ LPSystemCopyKeysCJ_impl( struct json_object** json, bool onPublicBus )
     if ( LP_ERR_NONE == err )
     {
         *json = jarray;
-    } 
+    }
     else
     {
         json_object_put( jarray );
@@ -1297,7 +1295,7 @@ LPSystemCopyAll_impl( char** jstr, bool onPublicBus )
 
     struct json_object* array = NULL;
     LPErr err = LPSystemCopyAllCJ_impl( &array, onPublicBus );
-    
+
     if ( LP_ERR_NONE == err ) {
         const char* str = json_object_get_string( array );
         g_assert( NULL != str );
@@ -1342,7 +1340,7 @@ addValToArray( const gchar* name, bool onPublicBus, void* closure )
 
         if ( !keyFoundInArray( array, key ) ) {
             err = LPSystemCopyStringValue( key, &value );
-            if ( LP_ERR_NONE == err ) 
+            if ( LP_ERR_NONE == err )
             {
                 struct json_object* pair = keyValueAsObject( key, value );
                 addPairToArray( &array, pair );
@@ -1384,9 +1382,9 @@ LPSystemCopyAllCJ_impl( struct json_object** json, bool onPublicBus )
             err = for_each_dir_token( LP_RUNTIME_DIR, addValToArray, onPublicBus, array );
         }
     }
-    for ( ii = 0; 
-          LP_ERR_NONE == err && ii < sizeof(g_non_tokens)/sizeof(g_non_tokens[0]); 
-          ++ii ) 
+    for ( ii = 0;
+          LP_ERR_NONE == err && ii < sizeof(g_non_tokens)/sizeof(g_non_tokens[0]);
+          ++ii )
     {
         err = addValToArray( g_non_tokens[ii], onPublicBus, array );
     }
@@ -1404,7 +1402,7 @@ LPErr
 LPSystemCopyAllCJ( struct json_object** json )
 {
     return LPSystemCopyAllCJ_impl( json, false );
-}    
+}
 
 LPErr
 LPSystemCopyValue( const char* key, char** jstr )
@@ -1415,7 +1413,7 @@ LPSystemCopyValue( const char* key, char** jstr )
     struct json_object* json;
     LPErr err = LPSystemCopyValueCJ( key, &json );
 
-    if ( (0 == err) && (NULL != json) ) 
+    if ( (0 == err) && (NULL != json) )
     {
         err = copy_as_string( json, jstr );
         json_object_put( json );
@@ -1475,7 +1473,7 @@ LPSystemKeyIsPublic( const char* key, bool* allowedOnPublicBus )
         */
         sHash = g_hash_table_new( g_str_hash, g_str_equal );
         g_assert( NULL != sHash );
-        
+
         if ( NULL != sHash ) {
             FILE* fp = fopen( WHITELIST_PATH, "r" );
             if ( NULL != fp ) {

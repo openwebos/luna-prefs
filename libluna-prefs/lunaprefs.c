@@ -800,6 +800,7 @@ get_from_cmdline( char** jstr, const char* key )
 
     return err;
 }
+
 static LPErr read_machine_type(char** jstr,const char* key)
 {
     nyx_error_t error = NYX_ERROR_GENERIC;
@@ -1344,10 +1345,10 @@ addValToArray( const gchar* name, bool onPublicBus, void* closure )
             {
                 struct json_object* pair = keyValueAsObject( key, value );
                 addPairToArray( &array, pair );
-                g_free( (gchar*)value );
             }
         }
     }
+    g_free( (gchar*)value );
     g_free( key );
     return err;
 }

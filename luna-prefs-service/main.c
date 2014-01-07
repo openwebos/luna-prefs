@@ -689,7 +689,6 @@ sysGetSome_impl( LSHandle* sh, LSMessage* message, void* user_data,
                     if ( isPublic && !onWhitelist(keyText) ) {
                         (void)LPErrorString( LP_ERR_NO_SUCH_KEY, &errMsg );
                         addKeyValueToArray( arrayOut, "errorText", errMsg );
-                        g_free( errMsg );
                     } else {
                         gchar* value = NULL;
                         LPErr err = LPSystemCopyStringValue( keyText, &value );
@@ -698,9 +697,10 @@ sysGetSome_impl( LSHandle* sh, LSMessage* message, void* user_data,
                         } else {
                             (void)LPErrorString( err, &errMsg );
                             addKeyValueToArray( arrayOut, "errorText", errMsg );
-                            g_free( errMsg );
                         }
+                        g_free(value);
                     }
+                    g_free( errMsg );
                 } else {
                     addKeyValueToArray( arrayOut, "errorText", "missing \"key\" parameter" );
                 }

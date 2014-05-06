@@ -128,7 +128,7 @@ errorReplyStr( LSHandle* lsh, LSMessage* message, const char* errString )
 static void
 errorReplyStrMissingParam( LSHandle* lsh, LSMessage* message, const char* param )
 {
-    char* msg = g_strdup_printf( "Missing required parameter '%s'.", param );
+    char* msg = g_strdup_printf( "Missing required parameter \"%s\".", param );
     errorReplyStr( lsh, message, msg );
     g_free( msg );
 }
@@ -702,7 +702,7 @@ sysGetSome_impl( LSHandle* sh, LSMessage* message, void* user_data,
                     }
                     g_free( errMsg );
                 } else {
-                    addKeyValueToArray( arrayOut, "errorText", "missing 'key' parameter" );
+                    addKeyValueToArray( arrayOut, "errorText", "missing \"key\" parameter" );
                 }
             } /* for */
         }

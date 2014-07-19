@@ -859,7 +859,7 @@ static LPErr read_OS_Info(char **jstr,const char* key)
         {
             if ( 0 == strncmp( key, "version",strlen(key) ))
             {
-                error = nyx_os_info_query(device, NYX_OS_INFO_CORE_OS_KERNEL_VERSION, &dev_name);
+                error = nyx_os_info_query(device, NYX_OS_INFO_WEBOS_API_VERSION, &dev_name);
             }
             else if(0 == strncmp(key,"buildNumber",strlen(key)))
             {

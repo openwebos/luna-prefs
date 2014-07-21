@@ -102,7 +102,8 @@
 #define PROP_NAME_FREESPACE       "storageFreeSpace"
 #define PROP_NAME_PREVPANIC       "prevBootPanicked"
 #define PROP_NAME_PREVSHUTCLEAN   "prevShutdownClean"
-
+#define PROP_NAME_WIFIOADDR       "WIFIoADDR"
+#define PROP_NAME_BTOADDR         "BToADDR"
 
 static const char* PALM_TOKEN_PREFIX = "com.palm.properties.";
 
@@ -823,6 +824,15 @@ static LPErr read_machine_type(char** jstr,const char* key)
             {
                 error = nyx_device_info_query(device, NYX_DEVICE_INFO_BOARD_TYPE, &dev_name);
             }
+            else if (0 == strncmp(key, "WIFIoADDR", strlen(key)))
+            {
+                error = nyx_device_info_query(device, NYX_DEVICE_INFO_WIFI_ADDR, &dev_name);
+            }
+            else if (0 == strncmp(key, "BToADDR", strlen(key)))
+            {
+                error = nyx_device_info_query(device, NYX_DEVICE_INFO_BT_ADDR, &dev_name);
+            }
+
             if (NYX_ERROR_NONE == error)
             {
                 *jstr = g_strdup(dev_name);
@@ -849,7 +859,7 @@ static LPErr read_OS_Info(char **jstr,const char* key)
         {
             if ( 0 == strncmp( key, "version",strlen(key) ))
             {
-                error = nyx_os_info_query(device, NYX_OS_INFO_CORE_OS_KERNEL_VERSION, &dev_name);
+                error = nyx_os_info_query(device, NYX_OS_INFO_WEBOS_API_VERSION, &dev_name);
             }
             else if(0 == strncmp(key,"buildNumber",strlen(key)))
             {
@@ -1037,6 +1047,8 @@ static const char* g_non_tokens[] = {
     ,PROP_NAME_FREESPACE
     ,PROP_NAME_PREVPANIC
     ,PROP_NAME_PREVSHUTCLEAN
+    ,PROP_NAME_WIFIOADDR
+    ,PROP_NAME_BTOADDR
 };
 
 static char*
@@ -1117,6 +1129,10 @@ LPSystemCopyStringValue( const char* key, char** jstr )
             err = figurePrevPanic( jstr );
         } else if ( ! strcmp( token, PROP_NAME_PREVSHUTCLEAN ) ) {
             err = figureShutdownClean( jstr );
+        } else if ( ! strcmp( token, PROP_NAME_WIFIOADDR ) ) {
+            err = read_machine_type(jstr, "WIFIoADDR");
+        } else if ( ! strcmp( token, PROP_NAME_BTOADDR ) ) {
+            err = read_machine_type(jstr, "BToADDR");
         } else if ( NULL != (path = getTokenPath( token, TOKENS_DIR )) ) {
             err = readFromFile( path, jstr );
         } else if ( NULL != (path = getTokenPath( token, LP_RUNTIME_DIR )) ) {
